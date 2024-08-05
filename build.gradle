@@ -1,0 +1,45 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.3.2'
+	id 'io.spring.dependency-management' version '1.1.6'
+	id 'com.google.cloud.tools.jib' version '3.4.0'
+}
+
+group = 'com.example'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+// Container Build 를 위한 세팅, jib Task 에 대한 정의
+jib {
+	from {
+		image = 'openjdk:17'
+	}
+	to {
+		// ECR 주소
+		image = '905418310587.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server'
+		tags = ['0.0.1']
+	}
+	container {
+		creationTime = 'USE_CURRENT_TIMESTAMP'
+	}
+}
