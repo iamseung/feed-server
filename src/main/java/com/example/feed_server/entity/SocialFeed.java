@@ -1,5 +1,6 @@
 package com.example.feed_server.entity;
 
+import com.example.feed_server.dto.FeedRequest;
 import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
@@ -33,6 +34,16 @@ public class SocialFeed {
         this.uploaderId = uploaderId;
         this.uploadDatetime = uploadDatetime;
         this.contents = contents;
+    }
+
+    public SocialFeed(String imageId, int uploaderId, String contents) {
+        this.imageId = imageId;
+        this.uploaderId = uploaderId;
+        this.contents = contents;
+    }
+
+    public SocialFeed(FeedRequest request) {
+        this(request.getImageId(), request.getUploaderId(), request.getContents());
     }
 
     public int getFeedId() {

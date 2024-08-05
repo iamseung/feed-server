@@ -18,7 +18,7 @@ spec:
       containers:
         - name: feed-container
           # ECR 주소 + tags
-          image: 905418310587.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server:0.0.1
+          image: 905418310587.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server:0.0.2
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: dev
