@@ -6,3 +6,5 @@ spring:
     password: password!
 server:
   shutdown: immediate
+sns:
+  user-server: http://localhost:9080
