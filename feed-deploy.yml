@@ -18,10 +18,13 @@ spec:
       containers:
         - name: feed-container
           # ECR 주소 + tags
-          image: 905418310587.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server:0.0.2
+          image: 905418310587.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server:0.0.3
+          # 환경 변수
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: dev
+            - name: USER_SERVICE
+              value: http://user-service.sns.svc.cluster.local:8080
           envFrom:
             - configMapRef:
                 name: mysql-config
@@ -30,10 +33,10 @@ spec:
           resources:
             requests:
               memory: "512M"
-              cpu: "500m"
+              cpu: "300m"
             limits:
               memory: "1Gi"
-              cpu: "1000m"
+              cpu: "600m"
           lifecycle:
             preStop:
               exec:

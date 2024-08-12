@@ -8,9 +8,7 @@ plugins {
 group = 'com.example'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+	sourceCompatibility = '17'
 }
 
 repositories {
@@ -37,7 +35,7 @@ jib {
 	to {
 		// ECR 주소
 		image = '905418310587.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server'
-		tags = ['0.0.2']
+		tags = ['0.0.3']
 	}
 	container {
 		creationTime = 'USE_CURRENT_TIMESTAMP'

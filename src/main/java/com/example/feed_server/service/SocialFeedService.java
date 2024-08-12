@@ -1,10 +1,14 @@
 package com.example.feed_server.service;
 
 import com.example.feed_server.dto.FeedRequest;
+import com.example.feed_server.dto.UserInfo;
 import com.example.feed_server.entity.SocialFeed;
 import com.example.feed_server.repository.SocialFeedRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 
 import java.util.List;
 
@@ -12,6 +16,10 @@ import java.util.List;
 public class SocialFeedService {
 
     private SocialFeedRepository feedRepository;
+
+    @Value("${sns.user-server}")
+    private String userServiceUrl;
+    private RestClient restClient = RestClient.create();
 
     public SocialFeedService(SocialFeedRepository feedRepository) {
         this.feedRepository = feedRepository;
@@ -37,5 +45,16 @@ public class SocialFeedService {
     @Transactional
     public SocialFeed createFeed(FeedRequest feed) {
         return feedRepository.save(new SocialFeed(feed));
+    }
+
+    // user-server 로 부터 회원 정보 조회, RestClient
+    public UserInfo getUserInfo(int userId) {
+        return restClient.get()
+                .uri(userServiceUrl + "/api/users/" + userId)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, (request, response) -> {
+                    throw new RuntimeException("invalid server response " + response.getStatusText());
+                })
+                .body(UserInfo.class);
     }
 }
