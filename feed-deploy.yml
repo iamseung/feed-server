@@ -18,7 +18,7 @@ spec:
       containers:
         - name: feed-container
           # ECR 주소 + tags
-          image: 905418310587.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server:0.0.3
+          image: 905418310587.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server:0.0.4
           # 환경 변수
           env:
             - name: SPRING_PROFILES_ACTIVE
@@ -30,6 +30,10 @@ spec:
                 name: mysql-config
             - secretRef:
                 name: mysql-secret
+            - configMapRef:
+                name: kafka-config
+            - secretRef:
+                name: kafka-secret
           resources:
             requests:
               memory: "512M"
