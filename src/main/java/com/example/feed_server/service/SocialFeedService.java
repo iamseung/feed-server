@@ -4,6 +4,8 @@ import com.example.feed_server.dto.FeedRequest;
 import com.example.feed_server.dto.UserInfo;
 import com.example.feed_server.entity.SocialFeed;
 import com.example.feed_server.repository.SocialFeedRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -14,7 +16,7 @@ import java.util.List;
 
 @Service
 public class SocialFeedService {
-
+    private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
     private SocialFeedRepository feedRepository;
 
     @Value("${sns.user-server}")
@@ -49,8 +51,10 @@ public class SocialFeedService {
 
     // user-server 로 부터 회원 정보 조회, RestClient
     public UserInfo getUserInfo(int userId) {
+        log.info("userId : " + String.valueOf(userId));
+
         return restClient.get()
-                .uri(userServiceUrl + "/api/users/" + userId)
+                    .uri(userServiceUrl + "/api/users/" + userId)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, (request, response) -> {
                     throw new RuntimeException("invalid server response " + response.getStatusText());
