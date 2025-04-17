@@ -29,7 +29,8 @@ public class SocialFeedService {
     private String userServiceUrl;
     private RestClient restClient = RestClient.create();
 
-    public SocialFeedService(SocialFeedRepository feedRepository, KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper) {
+    public SocialFeedService(SocialFeedRepository feedRepository, KafkaTemplate<String, String> kafkaTemplate,
+            ObjectMapper objectMapper) {
         this.feedRepository = feedRepository;
         this.kafkaTemplate = kafkaTemplate;
         // Spring 에서 제공하는 data 기능이 포함된 objectMapper 를 제공받아 사용
@@ -51,6 +52,13 @@ public class SocialFeedService {
 
     public void deleteFeed(int feedId) {
         feedRepository.deleteById(feedId);
+
+        // Feed 삭제 또한 고려해야 함
+        try {
+            kafkaTemplate.send("feed.delete", objectMapper.writeValueAsString(feedId));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
@@ -74,7 +82,8 @@ public class SocialFeedService {
     public void refreshAllFeeds() {
         List<SocialFeed> feeds = getAllFeeds();
 
-        for(SocialFeed feed : feeds) {
+        // MySQL 기반의 피드를 Redis 에 갱신
+        for (SocialFeed feed : feeds) {
             UserInfo uploader = getUserInfo(feed.getUploaderId());
             FeedInfo feedInfo = new FeedInfo(feed, uploader.getUsername());
 
@@ -91,7 +100,7 @@ public class SocialFeedService {
         log.info("userId : " + String.valueOf(userId));
 
         return restClient.get()
-                    .uri(userServiceUrl + "/api/users/" + userId)
+                .uri(userServiceUrl + "/api/users/" + userId)
                 .retrieve()
                 .onStatus(HttpStatusCode::isError, (request, response) -> {
                     throw new RuntimeException("invalid server response " + response.getStatusText());
